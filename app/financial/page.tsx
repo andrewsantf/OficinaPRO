@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react'
 import { CreateExpenseForm } from '@/components/feature/CreateExpenseForm'
 import { ExpenseSearchList } from '@/components/feature/ExpenseSearchList'
+import { CashFlowSearch } from '@/components/feature/CashFlowSearch'
 import { getExpenses, getFinancialStatement } from './actions'
 import { FinancialMonthPicker } from '@/components/feature/FinancialMonthPicker'
 import Link from 'next/link'
@@ -187,26 +188,43 @@ export default async function FinancialPage({
                                 </Table>
                             </div>
 
-                            {/* Mobile List View - com pesquisa e ações */}
-                            <div className="md:hidden">
-                                <ExpenseSearchList
-                                    expenses={transactions.filter(t => t.type === 'expense').map(t => ({
-                                        id: t.id,
-                                        description: t.description,
-                                        amount_cents: t.amount,
-                                        due_date: t.date,
-                                        status: 'paid',
-                                        category: t.category
-                                    }))}
-                                    type="paid"
-                                    title="Despesas Pagas"
-                                />
+                            {/* Mobile List View - lista simples de entradas e saídas */}
+                            <div className="md:hidden divide-y">
+                                {transactions.map((t) => (
+                                    <div key={`mobile-${t.type}-${t.id}`} className="p-4 space-y-2">
+                                        <div className="flex justify-between items-start gap-2">
+                                            <span className="font-medium line-clamp-2 text-sm">{t.description}</span>
+                                            <span className={`font-bold whitespace-nowrap text-sm ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                                {t.type === 'expense' ? '-' : '+'} {formatMoney(t.amount)}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-xs text-muted-foreground">
+                                            <span>{new Date(t.date).toLocaleDateString('pt-BR')}</span>
+                                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium
+                                                ${t.type === 'income' ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600'}
+                                            `}>
+                                                {t.category}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                                {transactions.length === 0 && (
+                                    <div className="p-8 text-center text-muted-foreground text-sm">
+                                        Nenhuma movimentação no período.
+                                    </div>
+                                )}
                             </div>
 
                         </CardContent>
                     </Card>
 
-                    {/* 3. A Pagar */}
+                    {/* 3. Despesas Pagas - para Desfazer/Excluir */}
+                    <CashFlowSearch
+                        transactions={transactions}
+                        totalExpenses={summary.totalVariableCosts + summary.totalFixedExpenses}
+                    />
+
+                    {/* 4. Contas a Pagar */}
                     <ExpenseSearchList
                         expenses={allExpenses?.filter(e => e.status === 'pending') || []}
                         type="pending"
