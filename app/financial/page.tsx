@@ -221,7 +221,7 @@ export default async function FinancialPage({
                     {/* 3. Despesas Pagas - para Desfazer/Excluir */}
                     <CashFlowSearch
                         transactions={transactions}
-                        totalExpenses={summary.totalVariableCosts + summary.totalFixedExpenses}
+                        totalExpenses={summary.totalFixedExpenses}
                     />
 
                     {/* 4. Contas a Pagar */}
