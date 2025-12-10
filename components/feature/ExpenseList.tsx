@@ -18,6 +18,7 @@ interface ExpenseListProps {
 export function ExpenseList({ expenses }: ExpenseListProps) {
     const formatMoney = (cents: number) => (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
+    // Mostrar apenas pendentes aqui - pagas aparecem só no fluxo de caixa
     const pendingExpenses = expenses.filter(e => e.status === 'pending')
 
     if (pendingExpenses.length === 0) {

@@ -31,6 +31,8 @@ export function ExpenseCard({ expense, formatMoney }: ExpenseCardProps) {
     const [amount, setAmount] = useState(formatMoney(expense.amount_cents))
     const [dueDate, setDueDate] = useState(expense.due_date)
 
+    const isPaid = expense.status === 'paid'
+
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let value = e.target.value.replace(/\D/g, "")
         if (value === '') {
@@ -74,13 +76,13 @@ export function ExpenseCard({ expense, formatMoney }: ExpenseCardProps) {
         })
     }
 
-    const handleMarkPaid = () => {
+    const handleToggleStatus = () => {
         startTransition(async () => {
             const result = await toggleExpenseStatus(expense.id, expense.status)
             if (result.error) {
                 toast.error(result.error)
             } else {
-                toast.success(expense.status === 'pending' ? 'Marcado como pago!' : 'Desmarcado')
+                toast.success(isPaid ? 'Pagamento desfeito!' : 'Marcado como pago!')
             }
         })
     }
@@ -163,14 +165,18 @@ export function ExpenseCard({ expense, formatMoney }: ExpenseCardProps) {
 
     // Normal view
     return (
-        <div className="p-3 bg-white border border-amber-100 rounded-lg shadow-sm">
+        <div className={`p-3 rounded-lg shadow-sm ${isPaid ? 'bg-green-50/50 border border-green-200' : 'bg-white border border-amber-100'}`}>
             <div className="flex justify-between items-start mb-2">
-                <span className="font-medium text-sm text-slate-800">{expense.description}</span>
-                <span className="font-bold text-sm text-slate-900">{formatMoney(expense.amount_cents)}</span>
+                <span className={`font-medium text-sm ${isPaid ? 'text-green-800' : 'text-slate-800'}`}>
+                    {isPaid && '✓ '}{expense.description}
+                </span>
+                <span className={`font-bold text-sm ${isPaid ? 'text-green-700' : 'text-slate-900'}`}>
+                    {formatMoney(expense.amount_cents)}
+                </span>
             </div>
             <div className="flex justify-between items-center">
                 <span className="text-xs text-muted-foreground">
-                    Vence: {new Date(expense.due_date).toLocaleDateString('pt-BR')}
+                    {isPaid ? 'Pago' : 'Vence'}: {new Date(expense.due_date).toLocaleDateString('pt-BR')}
                 </span>
                 <div className="flex gap-1">
                     <Button
@@ -194,11 +200,14 @@ export function ExpenseCard({ expense, formatMoney }: ExpenseCardProps) {
                     <Button
                         size="sm"
                         variant="outline"
-                        onClick={handleMarkPaid}
+                        onClick={handleToggleStatus}
                         disabled={isPending}
-                        className="h-6 text-[10px] border-amber-200 hover:bg-amber-50 text-amber-700 ml-1"
+                        className={`h-6 text-[10px] ml-1 ${isPaid
+                                ? 'border-green-300 hover:bg-green-100 text-green-700'
+                                : 'border-amber-200 hover:bg-amber-50 text-amber-700'
+                            }`}
                     >
-                        {isPending ? '...' : 'Pagar'}
+                        {isPending ? '...' : isPaid ? 'Desfazer' : 'Pagar'}
                     </Button>
                 </div>
             </div>

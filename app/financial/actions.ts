@@ -210,7 +210,7 @@ export async function getFinancialStatement(month?: string) {
 
     const outflows = expenses?.map(e => ({
         id: e.id,
-        type: 'expense',
+        type: 'expense' as const,
         date: e.payment_date,
         description: e.description,
         amount: e.amount_cents,
