@@ -140,14 +140,19 @@ export async function getExpenses(month?: string) {
 export async function getFinancialStatement(month?: string) {
     const supabase = await createClient()
 
-    // Define date range
+    // Define date range using simple YYYY-MM-DD format to avoid timezone issues
     const now = new Date()
-    const targetDate = month ? new Date(month + '-01') : new Date(now.getFullYear(), now.getMonth(), 1) // Default to 1st of current month
-    const startStr = targetDate.toISOString()
+    const targetMonth = month || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+
+    // Parse month string 'YYYY-MM'
+    const [year, monthNum] = targetMonth.split('-').map(Number)
+
+    // Start of month (YYYY-MM-01)
+    const startStr = `${targetMonth}-01`
 
     // End date (start of next month)
-    const nextMonth = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 1)
-    const endStr = nextMonth.toISOString()
+    const nextMonthDate = new Date(year, monthNum, 1) // JS month is 0-indexed, so monthNum is already +1
+    const endStr = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2, '0')}-01`
 
     // 1. INCOMES (Service Orders)
     // We consider 'finished' or 'paid' as realized revenue for this view, matches dashboard.
