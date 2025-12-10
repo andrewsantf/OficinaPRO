@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react'
 import { CreateExpenseForm } from '@/components/feature/CreateExpenseForm'
-import { ExpenseList } from '@/components/feature/ExpenseList'
-import { CashFlowList } from '@/components/feature/CashFlowList'
+import { ExpenseSearchList } from '@/components/feature/ExpenseSearchList'
 import { getExpenses, getFinancialStatement } from './actions'
 import { FinancialMonthPicker } from '@/components/feature/FinancialMonthPicker'
 import Link from 'next/link'
@@ -188,9 +187,19 @@ export default async function FinancialPage({
                                 </Table>
                             </div>
 
-                            {/* Mobile List View - com ações de Desfazer/Excluir */}
+                            {/* Mobile List View - com pesquisa e ações */}
                             <div className="md:hidden">
-                                <CashFlowList transactions={transactions} />
+                                <ExpenseSearchList
+                                    expenses={transactions.filter(t => t.type === 'expense').map(t => ({
+                                        id: t.id,
+                                        description: t.description,
+                                        amount_cents: t.amount,
+                                        due_date: t.date,
+                                        status: 'paid',
+                                        category: t.category
+                                    }))}
+                                    type="paid"
+                                />
                             </div>
 
                         </CardContent>
@@ -206,7 +215,7 @@ export default async function FinancialPage({
                             <CardDescription className="text-amber-700/80 text-xs">Contas em aberto (Geral)</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <ExpenseList expenses={allExpenses || []} />
+                            <ExpenseSearchList expenses={allExpenses || []} type="pending" />
                         </CardContent>
                     </Card>
                 </div>
