@@ -17,7 +17,7 @@ interface Customer {
     phone: string | null
     email: string | null
     doc_type: string
-    doc_number: string
+    cpf_cnpj: string // Corrigido para corresponder ao BD
     address?: string | null
 }
 
@@ -46,7 +46,7 @@ export function CustomerSearchList({ customers }: CustomerSearchListProps) {
 
     // Prepare options safely
     const options = customers.map(c => ({
-        label: `${c.name} - ${c.doc_number ? formatDocument(c.doc_number) : 'S/ Doc'}`,
+        label: `${c.name} - ${c.cpf_cnpj ? formatDocument(c.cpf_cnpj) : 'S/ Doc'}`,
         value: c.id
     }))
 
@@ -91,7 +91,7 @@ export function CustomerSearchList({ customers }: CustomerSearchListProps) {
                                 </h4>
                                 <p className="text-sm text-muted-foreground flex items-center gap-1">
                                     <FileText className="h-3 w-3" />
-                                    {selectedCustomer.doc_type}: {selectedCustomer.doc_number ? formatDocument(selectedCustomer.doc_number) : 'N/A'}
+                                    {selectedCustomer.doc_type}: {selectedCustomer.cpf_cnpj ? formatDocument(selectedCustomer.cpf_cnpj) : 'N/A'}
                                 </p>
                             </div>
                             <Button variant="ghost" size="sm" onClick={() => setSelectedId('')}>
