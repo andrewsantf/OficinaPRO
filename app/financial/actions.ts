@@ -140,30 +140,37 @@ export async function getExpenses(month?: string) {
 export async function getFinancialStatement(month?: string) {
     const supabase = await createClient()
 
-    // Define date range using simple YYYY-MM-DD format to avoid timezone issues
+    // Define date range
     const now = new Date()
     const targetMonth = month || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 
     // Parse month string 'YYYY-MM'
     const [year, monthNum] = targetMonth.split('-').map(Number)
 
-    // Start of month (YYYY-MM-01)
-    const startStr = `${targetMonth}-01`
+    // Start of month - usar timestamp ISO para comparação correta
+    const startDate = new Date(year, monthNum - 1, 1, 0, 0, 0) // monthNum - 1 porque JS é 0-indexed
+    const startStr = startDate.toISOString()
 
     // End date (start of next month)
-    const nextMonthDate = new Date(year, monthNum, 1) // JS month is 0-indexed, so monthNum is already +1
-    const endStr = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2, '0')}-01`
+    const endDate = new Date(year, monthNum, 1, 0, 0, 0) // monthNum já é o próximo mês (0-indexed)
+    const endStr = endDate.toISOString()
+
+    console.log('Financial Statement Query:', { targetMonth, startStr, endStr })
 
     // 1. INCOMES (Service Orders)
     // We consider 'finished' or 'paid' as realized revenue for this view, matches dashboard.
-    // Using created_at for simple accrual simulation, or we could look for a 'payment_date' if added later.
-    const { data: orders } = await supabase
+    const { data: orders, error: ordersError } = await supabase
         .from('service_orders')
         .select('id, customer_id, customers(name), total_amount_cents, created_at, status')
         .gte('created_at', startStr)
         .lt('created_at', endStr)
         .in('status', ['finished', 'paid'])
         .order('created_at', { ascending: false })
+
+    if (ordersError) {
+        console.error('Error fetching orders:', ordersError)
+    }
+    console.log('Orders found:', orders?.length || 0)
 
     // 2. COSTS (Materials + Commissions linked to those orders)
     // We need to fetch items for these orders to calculate the variable cost (COGS)
