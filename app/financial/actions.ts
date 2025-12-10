@@ -163,14 +163,22 @@ export async function getFinancialStatement(month?: string) {
         .order('payment_date', { ascending: false })
 
     // 4. PREPARE DATA
-    const incomes = orders?.map(o => ({
-        id: o.id,
-        type: 'income',
-        date: o.created_at,
-        description: `Serviço #${o.id.slice(0, 8)} - ${Array.isArray(o.customers) ? o.customers[0]?.name : o.customers?.name || 'Cliente'}`,
-        amount: o.total_amount_cents || 0,
-        category: 'Serviços'
-    })) || []
+    const incomes = orders?.map(o => {
+        // Handle customers which can be array or single object from Supabase join
+        const customer = o.customers as { name: string } | { name: string }[] | null
+        const customerName = Array.isArray(customer)
+            ? customer[0]?.name
+            : customer?.name || 'Cliente'
+
+        return {
+            id: o.id,
+            type: 'income' as const,
+            date: o.created_at,
+            description: `Serviço #${o.id.slice(0, 8)} - ${customerName}`,
+            amount: o.total_amount_cents || 0,
+            category: 'Serviços'
+        }
+    }) || []
 
     const outflows = expenses?.map(e => ({
         id: e.id,
