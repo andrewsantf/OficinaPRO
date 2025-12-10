@@ -159,18 +159,20 @@ export async function getFinancialStatement(month?: string) {
 
     // 1. INCOMES (Service Orders)
     // We consider 'finished' or 'paid' as realized revenue for this view, matches dashboard.
+    console.log('Query params:', { startStr, endStr, statuses: ['finished', 'paid'] })
+
     const { data: orders, error: ordersError } = await supabase
         .from('service_orders')
-        .select('id, customer_id, customers(name), total_amount_cents, created_at, status')
+        .select('id, total_amount_cents, created_at, status')
         .gte('created_at', startStr)
         .lt('created_at', endStr)
         .in('status', ['finished', 'paid'])
         .order('created_at', { ascending: false })
 
     if (ordersError) {
-        console.error('Error fetching orders:', ordersError)
+        console.error('Error fetching orders:', JSON.stringify(ordersError))
     }
-    console.log('Orders found:', orders?.length || 0)
+    console.log('Orders found:', orders?.length || 0, 'Data:', JSON.stringify(orders?.slice(0, 2)))
 
     // 2. COSTS (Materials + Commissions linked to those orders)
     // We need to fetch items for these orders to calculate the variable cost (COGS)
@@ -199,17 +201,11 @@ export async function getFinancialStatement(month?: string) {
 
     // 4. PREPARE DATA
     const incomes = orders?.map(o => {
-        // Handle customers which can be array or single object from Supabase join
-        const customer = o.customers as { name: string } | { name: string }[] | null
-        const customerName = Array.isArray(customer)
-            ? customer[0]?.name
-            : customer?.name || 'Cliente'
-
         return {
             id: o.id,
             type: 'income' as const,
             date: o.created_at,
-            description: `Serviço #${o.id.slice(0, 8)} - ${customerName}`,
+            description: `Serviço #${o.id.slice(0, 8)}`,
             amount: o.total_amount_cents || 0,
             category: 'Serviços'
         }
