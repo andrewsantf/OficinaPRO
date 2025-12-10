@@ -1,12 +1,12 @@
-import CustomerList from '@/components/feature/CustomerList'
+import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Search, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { CustomerSearchList } from '@/components/feature/CustomerSearchList'
+import { getCustomers } from './actions'
 
-export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-    const params = await searchParams
-    const search = params.q
+export default async function CustomersPage() {
+    const customers = await getCustomers()
 
     return (
         <div className="container mx-auto p-4 md:p-8">
@@ -23,21 +23,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                 </div>
             </div>
 
-            <div className="flex gap-4 mb-6">
-                <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <form>
-                        <Input
-                            name="q"
-                            placeholder="Buscar por nome ou CPF..."
-                            className="pl-8"
-                            defaultValue={search}
-                        />
-                    </form>
-                </div>
-            </div>
-
-            <CustomerList search={search} />
+            <CustomerSearchList customers={customers} />
         </div>
     )
 }

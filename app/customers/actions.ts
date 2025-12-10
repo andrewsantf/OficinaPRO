@@ -4,6 +4,17 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+export async function getCustomers() {
+    const supabase = await createClient()
+
+    const { data: customers } = await supabase
+        .from('customers')
+        .select('id, name, phone, email, doc_type, doc_number')
+        .order('name', { ascending: true })
+
+    return customers || []
+}
+
 export async function updateCustomer(customerId: string, formData: FormData) {
     const supabase = await createClient()
 
