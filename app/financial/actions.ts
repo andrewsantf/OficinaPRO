@@ -103,32 +103,23 @@ export async function toggleExpenseStatus(id: string, currentStatus: string) {
     return { success: true }
 }
 
-export async function getExpenses(month?: string) {
+export async function getExpenses(options?: { month?: string, status?: string }) {
     const supabase = await createClient()
-    // Default to current month if not provided
 
-    // Construct query filters
     let query = supabase
         .from('expenses')
         .select('*')
         .order('due_date', { ascending: true })
 
-    // Date filtering can be added later if needed via args, 
-    // for now we fetch all or filter by month in UI, but ideally backend filtration.
-    // Let's implement month filtering if string provided 'YYYY-MM'
-
-    if (month) {
-        // month is '2024-12'
-        const start = `${month}-01`
-        // Calculate end of month
-        // Simple trick: start of next month
-        const [y, m] = month.split('-').map(Number)
-        const nextMonth = new Date(y, m, 1).toISOString().split('T')[0] // month is 0-indexed in JS? No, 1-indexed in split?
-        // JS Date: month 0-11
-        // input '2024-12' -> y=2024, m=12.
-        // Date(2024, 12, 1) -> Jan 2025. Correct.
-
+    if (options?.month) {
+        const start = `${options.month}-01`
+        const [y, m] = options.month.split('-').map(Number)
+        const nextMonth = new Date(y, m, 1).toISOString().split('T')[0]
         query = query.gte('due_date', start).lt('due_date', nextMonth)
+    }
+
+    if (options?.status) {
+        query = query.eq('status', options.status)
     }
 
     const { data, error } = await query

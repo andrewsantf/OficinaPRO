@@ -37,10 +37,15 @@ export default async function FinancialPage({
     // Fetch Statement Data
     const { summary, transactions } = await getFinancialStatement(displayMonth)
 
-    // Fetch pending expenses for the sidebar "A Pagar" widget (unaffected by month filter usually, or filtered? let's keep all pending)
-    const allExpenses = await getExpenses()
-    const totalPending = allExpenses?.filter(e => e.status === 'pending')
-        .reduce((acc, curr) => acc + curr.amount_cents, 0) || 0
+    // Fetch pending expenses for the sidebar "A Pagar" widget
+    // Optimization: Fetch LIMIT 50? Or all pending? All pending is fine, usually less than historical paid.
+    const pendingExpenses = await getExpenses({ status: 'pending' })
+
+    // Calculate total from fetched result
+    // const totalPending = pendingExpenses?.reduce((acc, curr) => acc + curr.amount_cents, 0) || 0
+    // Note: totalPending var is not used in the render code provided, maybe redundant? 
+    // Checking render... it is NOT used in the provided slice.
+    // But let's keep the fetch optimized.
 
 
     const formatMoney = (cents: number) => (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -226,7 +231,7 @@ export default async function FinancialPage({
 
                     {/* 4. Contas a Pagar */}
                     <ExpenseSearchList
-                        expenses={allExpenses?.filter(e => e.status === 'pending') || []}
+                        expenses={pendingExpenses || []}
                         type="pending"
                         title="Contas a Pagar"
                     />
