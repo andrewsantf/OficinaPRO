@@ -199,6 +199,7 @@ export default async function FinancialPage({
                                         category: t.category
                                     }))}
                                     type="paid"
+                                    title="Despesas Pagas"
                                 />
                             </div>
 
@@ -206,18 +207,11 @@ export default async function FinancialPage({
                     </Card>
 
                     {/* 3. A Pagar */}
-                    <Card className="bg-amber-50/50 border-amber-200 shadow-sm">
-                        <CardHeader className="pb-2">
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="text-amber-900 text-lg">A Pagar</CardTitle>
-                                <div className="text-amber-700 font-bold">{formatMoney(totalPending)}</div>
-                            </div>
-                            <CardDescription className="text-amber-700/80 text-xs">Contas em aberto (Geral)</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <ExpenseSearchList expenses={allExpenses || []} type="pending" />
-                        </CardContent>
-                    </Card>
+                    <ExpenseSearchList
+                        expenses={allExpenses?.filter(e => e.status === 'pending') || []}
+                        type="pending"
+                        title="Contas a Pagar"
+                    />
                 </div>
             </div>
         </>

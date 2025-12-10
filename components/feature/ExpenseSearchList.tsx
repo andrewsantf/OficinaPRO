@@ -3,7 +3,10 @@
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Search, Pencil, Trash2, Check, X, Undo2 } from 'lucide-react'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { SearchableSelect } from '@/components/ui/searchable-select'
+import { Pencil, Trash2, Check, X, Undo2, DollarSign, FileText } from 'lucide-react'
 import { deleteExpense, toggleExpenseStatus, updateExpense } from '@/app/financial/actions'
 import { toast } from 'sonner'
 
@@ -19,11 +22,11 @@ interface Expense {
 interface ExpenseSearchListProps {
     expenses: Expense[]
     type: 'pending' | 'paid'
+    title: string
 }
 
-export function ExpenseSearchList({ expenses, type }: ExpenseSearchListProps) {
-    const [search, setSearch] = useState('')
-    const [selectedId, setSelectedId] = useState<string | null>(null)
+export function ExpenseSearchList({ expenses, type, title }: ExpenseSearchListProps) {
+    const [selectedId, setSelectedId] = useState<string>('')
     const [isEditing, setIsEditing] = useState(false)
     const [isPending, startTransition] = useTransition()
 
@@ -34,22 +37,17 @@ export function ExpenseSearchList({ expenses, type }: ExpenseSearchListProps) {
 
     const formatMoney = (cents: number) => (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
-    // Filtrar por busca
-    const filteredExpenses = expenses.filter(e =>
-        e.description.toLowerCase().includes(search.toLowerCase())
-    )
+    const selectedExpense = expenses.find(e => e.id === selectedId)
 
-    const handleSelect = (expense: Expense) => {
-        if (selectedId === expense.id) {
-            setSelectedId(null)
-            setIsEditing(false)
-        } else {
-            setSelectedId(expense.id)
+    const handleSelect = (id: string) => {
+        setSelectedId(id)
+        const expense = expenses.find(e => e.id === id)
+        if (expense) {
             setEditDescription(expense.description)
             setEditAmount(formatMoney(expense.amount_cents))
             setEditDueDate(expense.due_date)
-            setIsEditing(false)
         }
+        setIsEditing(false)
     }
 
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,19 +78,20 @@ export function ExpenseSearchList({ expenses, type }: ExpenseSearchListProps) {
             } else {
                 toast.success('Despesa atualizada!')
                 setIsEditing(false)
-                setSelectedId(null)
+                setSelectedId('')
             }
         })
     }
 
     const handleDelete = (id: string) => {
+        if (!confirm("Tem certeza que deseja excluir esta despesa?")) return
         startTransition(async () => {
             const result = await deleteExpense(id)
             if (result.error) {
                 toast.error(result.error)
             } else {
                 toast.success('Despesa excluída!')
-                setSelectedId(null)
+                setSelectedId('')
             }
         })
     }
@@ -104,165 +103,184 @@ export function ExpenseSearchList({ expenses, type }: ExpenseSearchListProps) {
                 toast.error(result.error)
             } else {
                 toast.success(currentStatus === 'pending' ? 'Marcado como pago!' : 'Pagamento desfeito!')
-                setSelectedId(null)
+                setSelectedId('')
             }
         })
     }
 
-    if (expenses.length === 0) {
-        return (
-            <p className="text-sm text-muted-foreground text-center py-4">
-                {type === 'pending' ? 'Nenhuma conta pendente' : 'Nenhuma movimentação'}
-            </p>
-        )
-    }
+    // Total do tipo
+    const total = expenses.reduce((acc, e) => acc + e.amount_cents, 0)
 
     return (
-        <div className="space-y-3">
-            {/* Campo de Busca */}
-            <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Buscar despesa..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="pl-9 h-9 text-sm"
-                />
-            </div>
+        <Card className={type === 'pending' ? 'bg-amber-50/50 border-amber-200' : 'bg-green-50/50 border-green-200'}>
+            <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                    <CardTitle className={`flex items-center gap-2 ${type === 'pending' ? 'text-amber-900' : 'text-green-900'}`}>
+                        {type === 'pending' ? <FileText className="h-5 w-5" /> : <DollarSign className="h-5 w-5" />}
+                        {title}
+                    </CardTitle>
+                    <div className={`font-bold ${type === 'pending' ? 'text-amber-700' : 'text-green-700'}`}>
+                        {formatMoney(total)}
+                    </div>
+                </div>
 
-            {/* Lista de Resultados */}
-            <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                {filteredExpenses.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                        Nenhum resultado para "{search}"
-                    </p>
-                ) : (
-                    filteredExpenses.map(expense => (
-                        <div key={expense.id}>
-                            {/* Card da Despesa */}
-                            <div
-                                onClick={() => handleSelect(expense)}
-                                className={`p-3 rounded-lg cursor-pointer transition-all ${selectedId === expense.id
-                                        ? 'bg-blue-50 border-2 border-blue-300'
-                                        : type === 'paid'
-                                            ? 'bg-green-50/50 border border-green-100 hover:bg-green-50'
-                                            : 'bg-white border border-slate-200 hover:bg-slate-50'
-                                    }`}
+                {/* Campo de Busca - igual ao MechanicList */}
+                <div className="mt-4 pt-4 border-t">
+                    <div className="space-y-2">
+                        <Label>Buscar Despesa</Label>
+                        <div className="max-w-md">
+                            <SearchableSelect
+                                placeholder="Digite para buscar..."
+                                options={expenses.map(e => ({
+                                    label: `${e.description} - ${formatMoney(e.amount_cents)}`,
+                                    value: e.id
+                                }))}
+                                value={selectedId}
+                                onValueChange={handleSelect}
+                            />
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            Selecione uma despesa para {type === 'pending' ? 'editar, excluir ou marcar como paga' : 'desfazer ou excluir'}.
+                        </p>
+                    </div>
+                </div>
+            </CardHeader>
+
+            <CardContent className="pt-0">
+                {/* Card da Despesa Selecionada - igual ao MechanicList */}
+                {selectedExpense && !isEditing && (
+                    <div className={`p-4 rounded-lg border animate-in fade-in slide-in-from-top-2 ${type === 'pending' ? 'bg-orange-50/50 border-orange-200' : 'bg-green-100/50 border-green-300'
+                        }`}>
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 className={`font-bold text-lg ${type === 'pending' ? 'text-orange-900' : 'text-green-900'}`}>
+                                    {selectedExpense.description}
+                                </h4>
+                                <p className="text-sm text-muted-foreground">
+                                    {type === 'pending' ? 'Vence' : 'Pago'}: {new Date(selectedExpense.due_date).toLocaleDateString('pt-BR')}
+                                </p>
+                            </div>
+                            <Button variant="ghost" size="sm" onClick={() => setSelectedId('')}>
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-2xl font-bold">{formatMoney(selectedExpense.amount_cents)}</span>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${selectedExpense.category === 'fixed' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
+                                }`}>
+                                {selectedExpense.category === 'fixed' ? 'Despesa Fixa' : 'Despesa Variável'}
+                            </span>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setIsEditing(true)}
+                                className="flex-1"
                             >
-                                <div className="flex justify-between items-start">
-                                    <span className="font-medium text-sm text-slate-800 line-clamp-1">
-                                        {type === 'paid' && '✓ '}{expense.description}
-                                    </span>
-                                    <span className={`font-bold text-sm whitespace-nowrap ml-2 ${type === 'paid' ? 'text-green-700' : 'text-slate-900'
-                                        }`}>
-                                        {formatMoney(expense.amount_cents)}
-                                    </span>
+                                <Pencil className="h-4 w-4 mr-2" /> Editar
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDelete(selectedExpense.id)}
+                                disabled={isPending}
+                                className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
+                            >
+                                <Trash2 className="h-4 w-4 mr-2" /> {isPending ? '...' : 'Excluir'}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant={type === 'pending' ? 'default' : 'outline'}
+                                onClick={() => handleToggleStatus(selectedExpense.id, selectedExpense.status)}
+                                disabled={isPending}
+                                className={`flex-1 ${type === 'paid' ? 'text-amber-700 border-amber-200 hover:bg-amber-50' : ''}`}
+                            >
+                                {type === 'pending' ? (
+                                    <><Check className="h-4 w-4 mr-2" /> {isPending ? '...' : 'Marcar Pago'}</>
+                                ) : (
+                                    <><Undo2 className="h-4 w-4 mr-2" /> {isPending ? '...' : 'Desfazer'}</>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Formulário de Edição */}
+                {selectedExpense && isEditing && (
+                    <div className="p-4 rounded-lg border-2 border-blue-200 bg-blue-50 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex justify-between items-start mb-4">
+                            <h4 className="font-bold text-lg text-blue-900">Editar: {selectedExpense.description}</h4>
+                            <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)}>
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Descrição</Label>
+                                <Input
+                                    value={editDescription}
+                                    onChange={(e) => setEditDescription(e.target.value)}
+                                    placeholder="Descrição"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Valor</Label>
+                                    <Input
+                                        value={editAmount}
+                                        onChange={handleAmountChange}
+                                        placeholder="Valor"
+                                    />
                                 </div>
-                                <div className="flex justify-between items-center text-xs text-muted-foreground mt-1">
-                                    <span>{type === 'paid' ? 'Pago' : 'Vence'}: {new Date(expense.due_date).toLocaleDateString('pt-BR')}</span>
-                                    <span className={`px-1.5 py-0.5 rounded text-[10px] ${expense.category === 'fixed' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
-                                        }`}>
-                                        {expense.category === 'fixed' ? 'Fixa' : 'Variável'}
-                                    </span>
+                                <div className="space-y-2">
+                                    <Label>Vencimento</Label>
+                                    <Input
+                                        type="date"
+                                        value={editDueDate}
+                                        onChange={(e) => setEditDueDate(e.target.value)}
+                                    />
                                 </div>
                             </div>
-
-                            {/* Painel de Ações - aparece quando selecionado */}
-                            {selectedId === expense.id && !isEditing && (
-                                <div className="mt-2 p-2 bg-slate-50 rounded-lg border flex flex-wrap gap-2 justify-center">
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            setIsEditing(true)
-                                        }}
-                                        className="h-8 text-xs"
-                                    >
-                                        <Pencil className="h-3 w-3 mr-1" /> Editar
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleDelete(expense.id)
-                                        }}
-                                        disabled={isPending}
-                                        className="h-8 text-xs text-red-600 border-red-200 hover:bg-red-50"
-                                    >
-                                        <Trash2 className="h-3 w-3 mr-1" /> {isPending ? '...' : 'Excluir'}
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleToggleStatus(expense.id, expense.status)
-                                        }}
-                                        disabled={isPending}
-                                        className={`h-8 text-xs ${type === 'paid'
-                                                ? 'text-amber-700 border-amber-200 hover:bg-amber-50'
-                                                : 'text-green-700 border-green-200 hover:bg-green-50'
-                                            }`}
-                                    >
-                                        {type === 'paid' ? (
-                                            <><Undo2 className="h-3 w-3 mr-1" /> Desfazer</>
-                                        ) : (
-                                            <><Check className="h-3 w-3 mr-1" /> Pagar</>
-                                        )}
-                                    </Button>
-                                </div>
-                            )}
-
-                            {/* Formulário de Edição */}
-                            {selectedId === expense.id && isEditing && (
-                                <div className="mt-2 p-3 bg-blue-50 rounded-lg border-2 border-blue-200 space-y-2">
-                                    <Input
-                                        value={editDescription}
-                                        onChange={(e) => setEditDescription(e.target.value)}
-                                        placeholder="Descrição"
-                                        className="h-8 text-sm"
-                                    />
-                                    <div className="flex gap-2">
-                                        <Input
-                                            value={editAmount}
-                                            onChange={handleAmountChange}
-                                            placeholder="Valor"
-                                            className="h-8 text-sm flex-1"
-                                        />
-                                        <Input
-                                            type="date"
-                                            value={editDueDate}
-                                            onChange={(e) => setEditDueDate(e.target.value)}
-                                            className="h-8 text-sm flex-1"
-                                        />
-                                    </div>
-                                    <div className="flex gap-2 justify-end">
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => setIsEditing(false)}
-                                            disabled={isPending}
-                                            className="h-7 text-xs"
-                                        >
-                                            <X className="h-3 w-3 mr-1" /> Cancelar
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            onClick={handleSave}
-                                            disabled={isPending}
-                                            className="h-7 text-xs"
-                                        >
-                                            <Check className="h-3 w-3 mr-1" /> {isPending ? 'Salvando...' : 'Salvar'}
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
+                            <div className="flex gap-2 justify-end">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => setIsEditing(false)}
+                                    disabled={isPending}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    onClick={handleSave}
+                                    disabled={isPending}
+                                >
+                                    {isPending ? 'Salvando...' : 'Salvar Alterações'}
+                                </Button>
+                            </div>
                         </div>
-                    ))
+                    </div>
                 )}
-            </div>
-        </div>
+
+                {/* Estado vazio - quando nada selecionado */}
+                {!selectedId && (
+                    <div className="text-center py-8 text-muted-foreground">
+                        {type === 'pending' ? (
+                            <FileText className="h-12 w-12 mx-auto text-amber-200 mb-4" />
+                        ) : (
+                            <DollarSign className="h-12 w-12 mx-auto text-green-200 mb-4" />
+                        )}
+                        <p>
+                            {expenses.length === 0
+                                ? (type === 'pending' ? 'Nenhuma conta pendente' : 'Nenhuma movimentação')
+                                : 'Selecione uma despesa acima para ver os detalhes.'
+                            }
+                        </p>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
     )
 }
