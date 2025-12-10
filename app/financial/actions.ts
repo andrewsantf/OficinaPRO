@@ -49,6 +49,29 @@ export async function createExpense(formData: FormData) {
     return { success: true }
 }
 
+export async function updateExpense(id: string, data: {
+    description?: string
+    amount_cents?: number
+    due_date?: string
+}) {
+    const supabase = await createClient()
+
+    const updateData: Record<string, unknown> = {}
+    if (data.description) updateData.description = data.description
+    if (data.amount_cents) updateData.amount_cents = data.amount_cents
+    if (data.due_date) updateData.due_date = data.due_date
+
+    const { error } = await supabase.from('expenses').update(updateData).eq('id', id)
+
+    if (error) {
+        console.error('Error updating expense:', error)
+        return { error: 'Erro ao atualizar despesa' }
+    }
+
+    revalidatePath('/financial')
+    return { success: true }
+}
+
 export async function deleteExpense(id: string) {
     const supabase = await createClient()
     const { error } = await supabase.from('expenses').delete().eq('id', id)

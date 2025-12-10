@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react'
 import { CreateExpenseForm } from '@/components/feature/CreateExpenseForm'
-import { deleteExpense, toggleExpenseStatus, getExpenses, getFinancialStatement } from './actions'
+import { ExpenseList } from '@/components/feature/ExpenseList'
+import { getExpenses, getFinancialStatement } from './actions'
 import { FinancialMonthPicker } from '@/components/feature/FinancialMonthPicker'
 import Link from 'next/link'
 
@@ -225,29 +226,8 @@ export default async function FinancialPage({
                             </div>
                             <CardDescription className="text-amber-700/80 text-xs">Contas em aberto (Geral)</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                {allExpenses?.filter(e => e.status === 'pending').map(e => (
-                                    <div key={e.id} className="p-3 bg-white border border-amber-100 rounded-lg shadow-sm flex flex-col gap-2">
-                                        <div className="flex justify-between items-start">
-                                            <span className="font-medium text-sm text-slate-800">{e.description}</span>
-                                            <span className="font-bold text-sm text-slate-900">{formatMoney(e.amount_cents)}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-xs text-muted-foreground">
-                                            <span>Vence: {new Date(e.due_date).toLocaleDateString('pt-BR')}</span>
-                                            {/* @ts-expect-error Server Action binding */}
-                                            <form action={toggleExpenseStatus.bind(null, e.id, 'pending')}>
-                                                <Button size="sm" variant="outline" className="h-6 text-[10px] border-amber-200 hover:bg-amber-50 text-amber-700">
-                                                    Marcar Pago
-                                                </Button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                ))}
-                                {!allExpenses?.some(e => e.status === 'pending') && (
-                                    <p className="text-sm text-muted-foreground text-center py-4">Tudo pago! 🎉</p>
-                                )}
-                            </div>
+                        <CardContent>
+                            <ExpenseList expenses={allExpenses || []} />
                         </CardContent>
                     </Card>
                 </div>
