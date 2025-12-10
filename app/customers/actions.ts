@@ -7,10 +7,16 @@ import { redirect } from 'next/navigation'
 export async function getCustomers() {
     const supabase = await createClient()
 
-    const { data: customers } = await supabase
+    // Simplificando o select para garantir que não falhe por campos nulos ou tipagem
+    const { data: customers, error } = await supabase
         .from('customers')
-        .select('id, name, phone, email, doc_type, doc_number')
+        .select('*')
         .order('name', { ascending: true })
+
+    if (error) {
+        console.error("Error fetching customers:", error)
+        return []
+    }
 
     return customers || []
 }

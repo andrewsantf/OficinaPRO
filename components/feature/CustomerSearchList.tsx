@@ -14,10 +14,11 @@ import { formatDocument, formatPhone } from '@/lib/utils'
 interface Customer {
     id: string
     name: string
-    phone: string
-    email: string
+    phone: string | null
+    email: string | null
     doc_type: string
     doc_number: string
+    address?: string | null
 }
 
 interface CustomerSearchListProps {
@@ -43,6 +44,12 @@ export function CustomerSearchList({ customers }: CustomerSearchListProps) {
         })
     }
 
+    // Prepare options safely
+    const options = customers.map(c => ({
+        label: `${c.name} - ${c.doc_number ? formatDocument(c.doc_number) : 'S/ Doc'}`,
+        value: c.id
+    }))
+
     return (
         <Card>
             <CardHeader className="pb-4">
@@ -62,10 +69,7 @@ export function CustomerSearchList({ customers }: CustomerSearchListProps) {
                         <Label>Buscar Cliente</Label>
                         <SearchableSelect
                             placeholder="Digite o nome ou documento..."
-                            options={customers.map(c => ({
-                                label: `${c.name} - ${formatDocument(c.doc_number)}`,
-                                value: c.id
-                            }))}
+                            options={options}
                             value={selectedId}
                             onValueChange={setSelectedId}
                         />
@@ -87,7 +91,7 @@ export function CustomerSearchList({ customers }: CustomerSearchListProps) {
                                 </h4>
                                 <p className="text-sm text-muted-foreground flex items-center gap-1">
                                     <FileText className="h-3 w-3" />
-                                    {selectedCustomer.doc_type}: {formatDocument(selectedCustomer.doc_number)}
+                                    {selectedCustomer.doc_type}: {selectedCustomer.doc_number ? formatDocument(selectedCustomer.doc_number) : 'N/A'}
                                 </p>
                             </div>
                             <Button variant="ghost" size="sm" onClick={() => setSelectedId('')}>
@@ -96,6 +100,12 @@ export function CustomerSearchList({ customers }: CustomerSearchListProps) {
                         </div>
 
                         <div className="space-y-2 mb-4 bg-white p-3 rounded-lg border">
+                            {selectedCustomer.address && (
+                                <div className="text-sm text-muted-foreground mb-2 pb-2 border-b">
+                                    <span className="font-medium text-foreground">Endereço:</span> {selectedCustomer.address}
+                                </div>
+                            )}
+
                             {selectedCustomer.phone && (
                                 <div className="flex items-center gap-2 text-sm">
                                     <Phone className="h-4 w-4 text-muted-foreground" />

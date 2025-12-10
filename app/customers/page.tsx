@@ -6,6 +6,7 @@ import { CustomerSearchList } from '@/components/feature/CustomerSearchList'
 import { getCustomers } from './actions'
 
 export default async function CustomersPage() {
+    // getCustomers já trata erro e retorna array vazio se falhar
     const customers = await getCustomers()
 
     return (
