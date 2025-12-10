@@ -1,4 +1,4 @@
-# 🔧 OficinaPRO
+# OficinaPRO
 
 **Sistema de Gestão Inteligente para Oficinas Mecânicas**
 
@@ -6,20 +6,20 @@ OficinaPRO é uma plataforma SaaS completa para gestão de oficinas mecânicas, 
 
 ---
 
-## ✨ Funcionalidades
+##  Funcionalidades
 
-- 📋 **Ordens de Serviço** - Crie, gerencie e acompanhe O.S. do início ao fim
-- 👥 **Gestão de Clientes** - Cadastro completo com histórico de serviços
-- 🚗 **Controle de Veículos** - Integração com tabela FIPE para consulta de valores
-- 💰 **Financeiro** - Fluxo de caixa, despesas e lucro líquido
-- 👨‍🔧 **Equipe e Comissões** - Gerencie mecânicos e calcule comissões automaticamente
-- 📱 **WhatsApp** - Envie orçamentos diretamente para o cliente
-- ✅ **Checklist Digital** - Vistoria de entrada do veículo pelo celular
-- 📊 **CRM** - Lembretes automáticos de retorno do cliente
+- **Ordens de Serviço** - Crie, gerencie e acompanhe O.S. do início ao fim
+- **Gestão de Clientes** - Cadastro completo com histórico de serviços
+- **Controle de Veículos** - Integração com tabela FIPE para consulta de valores
+- **Financeiro** - Fluxo de caixa, despesas e lucro líquido
+- **Equipe e Comissões** - Gerencie mecânicos e calcule comissões automaticamente
+- **WhatsApp** - Envie orçamentos diretamente para o cliente
+- **Checklist Digital** - Vistoria de entrada do veículo pelo celular
+- **CRM** - Lembretes automáticos de retorno do cliente
 
 ---
 
-## 🚀 Começando
+## Começando
 
 ### Pré-requisitos
 
@@ -57,7 +57,7 @@ npm run dev
 
 ---
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 - **Frontend**: Next.js 16, React 19, TypeScript
 - **Estilização**: Tailwind CSS 4
@@ -68,7 +68,7 @@ npm run dev
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 OficinaPRO/
@@ -86,7 +86,7 @@ OficinaPRO/
 
 ---
 
-## 📱 Páginas Públicas
+## Páginas Públicas
 
 | Página | Descrição |
 |--------|-----------|
@@ -101,7 +101,7 @@ OficinaPRO/
 
 ---
 
-## 🔐 Ambiente de Produção
+## Ambiente de Produção
 
 Para fazer o deploy em produção:
 
@@ -114,7 +114,7 @@ Recomendamos o deploy na [Vercel](https://vercel.com) para melhor integração c
 
 ---
 
-## 📞 Contato
+## Contato
 
 - **Email**: contato@oficinapro.com.br
 - **WhatsApp**: (61) 98427-5639
@@ -122,6 +122,6 @@ Recomendamos o deploy na [Vercel](https://vercel.com) para melhor integração c
 
 ---
 
-## 📄 Licença
+## Licença
 
 Este projeto é proprietário. Todos os direitos reservados © 2025 OficinaPro Tecnologia Ltda.
