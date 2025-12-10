@@ -189,7 +189,7 @@ export default async function FinancialPage({
                             </div>
 
                             {/* Mobile List View - lista simples de entradas e saídas */}
-                            <div className="md:hidden divide-y">
+                            <div className="md:hidden divide-y max-h-[300px] overflow-y-auto">
                                 {transactions.map((t) => (
                                     <div key={`mobile-${t.type}-${t.id}`} className="p-4 space-y-2">
                                         <div className="flex justify-between items-start gap-2">
