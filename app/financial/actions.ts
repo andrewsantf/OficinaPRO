@@ -140,19 +140,19 @@ export async function getExpenses(month?: string) {
 export async function getFinancialStatement(month?: string) {
     const supabase = await createClient()
 
-    // Define date range
+    // Define date range - usando mesmo formato do dashboard que funciona
     const now = new Date()
     const targetMonth = month || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 
     // Parse month string 'YYYY-MM'
     const [year, monthNum] = targetMonth.split('-').map(Number)
 
-    // Start of month - usar timestamp ISO para comparação correta
-    const startDate = new Date(year, monthNum - 1, 1, 0, 0, 0) // monthNum - 1 porque JS é 0-indexed
+    // Start of month - usando mesmo formato do dashboard
+    const startDate = new Date(year, monthNum - 1, 1) // monthNum - 1 porque JS é 0-indexed
     const startStr = startDate.toISOString()
 
     // End date (start of next month)
-    const endDate = new Date(year, monthNum, 1, 0, 0, 0) // monthNum já é o próximo mês (0-indexed)
+    const endDate = new Date(year, monthNum, 1) // próximo mês
     const endStr = endDate.toISOString()
 
     console.log('Financial Statement Query:', { targetMonth, startStr, endStr })
