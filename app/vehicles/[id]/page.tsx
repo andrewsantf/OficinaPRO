@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { formatDocument } from '@/lib/utils'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
@@ -82,6 +83,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
                     </CardHeader>
                     <CardContent className="space-y-2">
                         <p><strong>Nome:</strong> {vehicle.customers?.name}</p>
+                        <p><strong>CPF/CNPJ:</strong> {vehicle.customers?.cpf_cnpj ? formatDocument(vehicle.customers.cpf_cnpj) : 'Não informado'}</p>
                         <p><strong>Telefone:</strong> {vehicle.customers?.phone}</p>
                     </CardContent>
                 </Card>
