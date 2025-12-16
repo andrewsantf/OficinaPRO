@@ -17,7 +17,7 @@ export function Header() {
     }
 
     return (
-        <header className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md relative w-full z-50 transition-all duration-300">
+        <header className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 w-full z-50 transition-all duration-300">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 {/* Logo / Brand */}
                 <Link href="/dashboard" className="flex items-center gap-2.5 group cursor-pointer transition-opacity hover:opacity-80">
