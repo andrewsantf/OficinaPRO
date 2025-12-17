@@ -43,12 +43,28 @@ export default async function SubscriptionPage() {
 
                 {/* 1. Intro Text */}
                 <div className="text-center md:text-left order-1 md:col-start-1 md:row-start-1">
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-3 md:mb-4">
-                        Desbloqueie todo o potencial da sua <span className="text-blue-600">Oficina</span>.
-                    </h1>
-                    <p className="text-base md:text-lg text-slate-600">
-                        Você está a um passo profissionalizar sua gestão. Teste grátis por 3 dias e cancele quando quiser.
-                    </p>
+                    {subStatus === 'inactive' || subStatus === 'canceled' ? (
+                        <>
+                            <h1 className="text-3xl md:text-5xl font-extrabold text-red-600 leading-tight mb-3 md:mb-4">
+                                Seu período de teste acabou.
+                            </h1>
+                            <p className="text-base md:text-lg text-slate-900 font-medium mb-2">
+                                Não se preocupe: Todas as suas Ordens de Serviço e Clientes estão salvos e seguros aqui.
+                            </p>
+                            <p className="text-base md:text-lg text-slate-600">
+                                Para liberar seu acesso novamente e continuar lucrando, ative sua assinatura.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-3 md:mb-4">
+                                Desbloqueie todo o potencial da sua <span className="text-blue-600">Oficina</span>.
+                            </h1>
+                            <p className="text-base md:text-lg text-slate-600">
+                                Você está a um passo profissionalizar sua gestão. Teste grátis por 3 dias e cancele quando quiser.
+                            </p>
+                        </>
+                    )}
                 </div>
 
                 {/* 2. Card (Mobile: Middle/Second, Desktop: Right Column) */}

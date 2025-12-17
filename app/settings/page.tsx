@@ -39,7 +39,7 @@ export default async function SettingsPage() {
 
     const rawDoc = profile?.organizations?.document || ''
     const cleanDoc = rawDoc.replace(/\D/g, '')
-    const isIndividual = cleanDoc.length <= 11 && cleanDoc.length > 0
+    const isIndividual = cleanDoc.length <= 11
     const formattedDoc = formatDocument(rawDoc)
 
     return (

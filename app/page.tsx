@@ -41,7 +41,7 @@ export default function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                 </span>
-                Novidade: Orçamentos via WhatsApp
+                Novidade: Checklist Digital com Fotos
               </div>
               <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
                 Do Pátio para o Bolso: <br className="hidden md:block" />
@@ -73,37 +73,14 @@ export default function Home() {
             </div>
 
             {/* Hero Image / Abstract Visual */}
-            <div className="flex-1 w-full max-w-lg md:max-w-none relative">
+            <div className="flex-1 w-full max-w-lg md:max-w-none relative flex justify-center items-center">
               <div className="absolute inset-0 bg-blue-600 blur-[100px] opacity-20 rounded-full"></div>
-              <div className="relative bg-white border rounded-2xl shadow-2xl p-2 overflow-hidden transform rotate-1 hover:rotate-0 transition-transform duration-500">
-                {/* Mock Interface Header */}
-                <div className="bg-slate-50 border-b p-3 flex items-center gap-2 rounded-t-xl">
-                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                </div>
-                {/* Mock Content */}
-                <div className="p-6 space-y-4 bg-slate-50/50">
-                  <div className="flex justify-between items-center">
-                    <div className="h-8 w-32 bg-slate-200 rounded animate-pulse"></div>
-                    <div className="h-8 w-8 bg-slate-200 rounded-full"></div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="h-24 bg-white rounded-lg border shadow-sm p-4 space-y-2">
-                      <div className="h-4 w-12 bg-slate-100 rounded"></div>
-                      <div className="h-6 w-20 bg-slate-200 rounded"></div>
-                    </div>
-                    <div className="h-24 bg-white rounded-lg border shadow-sm p-4 space-y-2">
-                      <div className="h-4 w-12 bg-slate-100 rounded"></div>
-                      <div className="h-6 w-20 bg-slate-200 rounded"></div>
-                    </div>
-                  </div>
-                  <div className="h-32 bg-white rounded-lg border shadow-sm p-4 space-y-2">
-                    <div className="h-4 w-full bg-slate-100 rounded"></div>
-                    <div className="h-4 w-3/4 bg-slate-100 rounded"></div>
-                    <div className="h-4 w-1/2 bg-slate-100 rounded"></div>
-                  </div>
-                </div>
+              <div className="relative bg-white border rounded-2xl shadow-2xl overflow-hidden transform rotate-1 hover:rotate-0 transition-transform duration-500 max-w-lg">
+                <img
+                  src="/checklist-hero.jpeg"
+                  alt="OficinaPRO Dashboard e Checklist"
+                  className="w-full h-auto object-cover max-h-[550px] md:max-h-[650px]"
+                />
               </div>
             </div>
           </div>
