@@ -50,12 +50,22 @@ export async function POST(req: Request) {
                 .eq('id', profile.organization_id)
         }
 
+
+        const body = await req.json().catch(() => ({}))
+        const planType = body.plan === 'yearly' ? 'yearly' : 'monthly'
+
+        const PRICE_ID_MONTHLY = process.env.STRIPE_PRICE_ID || 'price_1QTrrVAnXFmquqF5hKqXGv6r';
+        // TODO: Replace with actual Yearly Price ID from Stripe Dashboard
+        const PRICE_ID_YEARLY = process.env.STRIPE_PRICE_ID_YEARLY || 'price_YEARLY_PLACEHOLDER';
+
+        const selectedPriceId = planType === 'yearly' ? PRICE_ID_YEARLY : PRICE_ID_MONTHLY
+
         // 2. Create Checkout Session
         const session = await stripe.checkout.sessions.create({
             customer: customerId,
             line_items: [
                 {
-                    price: PRICE_ID,
+                    price: selectedPriceId,
                     quantity: 1,
                 },
             ],

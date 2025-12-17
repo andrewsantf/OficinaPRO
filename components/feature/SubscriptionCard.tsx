@@ -13,9 +13,10 @@ interface SubscriptionCardProps {
 interface SubscriptionCardProps {
     status: string
     trialEndDate?: string | null
+    plan?: 'monthly' | 'yearly'
 }
 
-export function SubscriptionCard({ status, trialEndDate }: SubscriptionCardProps) {
+export function SubscriptionCard({ status, trialEndDate, plan = 'monthly' }: SubscriptionCardProps) {
     const [loading, setLoading] = useState(false)
 
     const isActive = status === 'active' || status === 'trialing'
@@ -34,6 +35,10 @@ export function SubscriptionCard({ status, trialEndDate }: SubscriptionCardProps
             setLoading(true)
             const response = await fetch('/api/checkout', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ plan }),
             })
 
             if (!response.ok) {

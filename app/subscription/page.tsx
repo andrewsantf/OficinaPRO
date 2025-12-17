@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { SubscriptionCard } from '@/components/feature/SubscriptionCard'
+import { SubscriptionPlans } from '@/components/feature/SubscriptionPlans'
 import { CheckCircle2, ShieldCheck, Zap } from 'lucide-react'
 
 export default async function SubscriptionPage() {
@@ -42,24 +42,7 @@ export default async function SubscriptionPage() {
 
                 {/* 2. Card (Mobile: Middle/Second, Desktop: Right Column) */}
                 <div className="order-2 md:col-start-2 md:row-start-1 md:row-span-2 w-full flex justify-center md:block">
-                    <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl md:shadow-2xl border border-slate-100 ring-1 ring-slate-900/5 w-full max-w-md md:max-w-none">
-                        <div className="text-center mb-6 md:mb-8">
-                            <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Plano Pro</span>
-                            <div className="mt-4 flex items-baseline justify-center gap-2">
-                                <span className="text-5xl font-extrabold tracking-tight text-slate-900">R$97</span>
-                                <span className="text-xl font-semibold text-slate-500">/mês</span>
-                            </div>
-                            <p className="text-sm text-slate-500 mt-2">Cancele a qualquer momento.</p>
-                        </div>
-
-                        <SubscriptionCard status={subStatus} trialEndDate={trialEnd} />
-
-                        <div className="mt-6 text-center">
-                            <p className="text-xs text-slate-400">
-                                Pagamento seguro processado e criptografado pelo Stripe.
-                            </p>
-                        </div>
-                    </div>
+                    <SubscriptionPlans subStatus={subStatus} trialEnd={trialEnd} />
                 </div>
 
                 {/* 3. Benefits (Mobile: Bottom/Third, Desktop: Left Column under Intro) */}
