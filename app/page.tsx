@@ -165,10 +165,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-4">
-              <FaqItem
-                question="Preciso colocar cartão de crédito para testar?"
-                answer="Não! O teste de 3 dias é totalmente gratuito e não pedimos dados de pagamento no cadastro. É só criar a conta e usar."
-              />
+
               <FaqItem
                 question="Funciona no celular e no computador?"
                 answer="Sim! O OficinaPro é 100% online e responsivo. Você pode acessar do computador da oficina, do tablet ou do seu celular em qualquer lugar."
