@@ -63,7 +63,7 @@ export async function signup(formData: FormData) {
 
     if (authData.session) {
         revalidatePath('/', 'layout')
-        redirect('/dashboard')
+        redirect('/subscription')
     }
 
     return { message: 'Verifique seu email para continuar.' }

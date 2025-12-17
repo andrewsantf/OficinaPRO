@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
         const PRICE_ID_MONTHLY = process.env.STRIPE_PRICE_ID || 'price_1QTrrVAnXFmquqF5hKqXGv6r';
         // TODO: Replace with actual Yearly Price ID from Stripe Dashboard
-        const PRICE_ID_YEARLY = process.env.STRIPE_PRICE_ID_YEARLY || 'price_YEARLY_PLACEHOLDER';
+        const PRICE_ID_YEARLY = process.env.STRIPE_PRICE_ID_YEARLY || 'price_1SfC7C9Vhvx9REw5E2vZBa8L';
 
         const selectedPriceId = planType === 'yearly' ? PRICE_ID_YEARLY : PRICE_ID_MONTHLY
 
