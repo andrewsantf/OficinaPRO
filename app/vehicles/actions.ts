@@ -125,8 +125,8 @@ export async function createVehicle(formData: FormData) {
 
     if (vehicleError) return { error: vehicleError.message }
 
-    revalidatePath('/dashboard')
-    redirect('/dashboard') // Or to the new OS page?
+    revalidatePath('/vehicles')
+    redirect('/vehicles')
 }
 
 export async function deleteVehicle(vehicleId: string) {

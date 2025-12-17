@@ -21,7 +21,8 @@ export async function CRMDashboard() {
             vehicles (
                 plate, model,
                 customers (name, phone)
-            )
+            ),
+            organizations (name)
         `)
         .gte('next_service_date', today)
         .lte('next_service_date', limitDate)
@@ -60,14 +61,17 @@ export async function CRMDashboard() {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const vehicle = os.vehicles as any
                     const customer = vehicle?.customers
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const organization = os.organizations as any
 
                     const customerName = customer?.name || 'Cliente'
                     const phone = customer?.phone || ''
                     const model = vehicle?.model || 'Veículo'
                     const plate = vehicle?.plate || ''
+                    const orgName = organization?.name || 'Oficina'
 
                     // Format WhatsApp Link
-                    const message = `Olá ${customerName}, tudo bem? Aqui é da Oficina. Seu ${model} está completando o prazo para a revisão de ${new Date(os.next_service_date).toLocaleDateString()}. Podemos agendar?`
+                    const message = `Olá ${customerName}, tudo bem? Aqui é da *${orgName}*. Seu ${model} está completando o prazo para a revisão de ${new Date(os.next_service_date).toLocaleDateString()}. Podemos agendar?`
                     const whatsappUrl = `https://wa.me/55${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
 
                     return (

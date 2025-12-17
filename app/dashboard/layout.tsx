@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardLayout({
     children,
 }: {
@@ -27,7 +29,11 @@ export default async function DashboardLayout({
 
     const status = org?.subscription_status
 
-    if (status !== 'active' && status !== 'trialing') {
+    console.log('[DashboardLayout] User:', user.id)
+    console.log('[DashboardLayout] Org:', org)
+    console.log('[DashboardLayout] Status:', status)
+
+    if (status !== 'active' && status !== 'trialing' && status !== 'lifetime') {
         redirect('/subscription')
     }
 

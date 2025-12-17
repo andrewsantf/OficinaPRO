@@ -70,7 +70,7 @@ export async function updateSession(request: NextRequest) {
 
             console.log(`[Middleware] Path: ${request.nextUrl.pathname}, User: ${user.id}, Status: ${status}`)
 
-            if (status !== 'active' && status !== 'trialing') {
+            if (status !== 'active' && status !== 'trialing' && status !== 'lifetime') {
                 console.log('[Middleware] Redirecting to subscription...')
                 return NextResponse.redirect(new URL('/subscription', request.url))
             }

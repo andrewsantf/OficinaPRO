@@ -24,7 +24,8 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
             vehicles (
                 plate, brand, model, color,
                 customers (name, phone)
-            )
+            ),
+            organizations (name)
         `)
         .eq('id', id)
         .single()
@@ -34,12 +35,11 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
     // Fetch items and checklist separately 
     const { data: items } = await supabase
         .from('service_items')
-        .select('*')
-        .eq('service_order_id', os.id)
         .select(`
             *,
             mechanics (name)
         `)
+        .eq('service_order_id', os.id)
         .order('created_at', { ascending: true })
 
     const { data: checklist } = await supabase
@@ -50,6 +50,9 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
 
     // Fetch mechanics
     const { data: mechanics } = await supabase.from('mechanics').select('id, name').order('name')
+
+    // Determine sender name
+    const senderName = os.organizations?.name || 'OficinaPro'
 
     return (
         <div className="container mx-auto p-4 md:p-8">
@@ -77,6 +80,7 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
                         osId={os.id}
                         totalAmount={os.total_amount_cents}
                         status={os.status}
+                        senderName={senderName}
                     />
                     <ServiceOrderActions osId={os.id} status={os.status} />
                     <Link href={`/service-orders/${os.id}/print`} className="w-full md:w-auto">

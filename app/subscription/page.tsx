@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { SubscriptionPlans } from '@/components/feature/SubscriptionPlans'
+import { ActiveSubscriptionPanel } from '@/components/feature/ActiveSubscriptionPanel'
 import { CheckCircle2, ShieldCheck, Zap } from 'lucide-react'
 
 export default async function SubscriptionPage() {
@@ -23,6 +24,16 @@ export default async function SubscriptionPage() {
 
     const subStatus = org?.subscription_status || 'inactive'
     const trialEnd = org?.trial_ends_at
+
+    const isActiveOrLifetime = subStatus === 'active' || subStatus === 'lifetime'
+
+    if (isActiveOrLifetime) {
+        return (
+            <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+                <ActiveSubscriptionPanel status={subStatus} trialEnd={trialEnd} />
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row items-center justify-center p-4 md:p-8 overflow-y-auto">

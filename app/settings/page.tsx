@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Crown } from 'lucide-react'
 import { updatePassword } from './actions'
 import { ProfileForm } from '@/components/feature/ProfileForm'
 import { getMechanics } from '@/app/settings/mechanic-actions'
@@ -60,21 +61,53 @@ export default async function SettingsPage() {
 
                 <div className="grid gap-6">
                     {/* Subscription Section */}
-                    <Card>
+                    <Card className={`border-l-4 ${subStatus === 'lifetime' ? 'border-l-amber-500' : subStatus === 'active' ? 'border-l-green-500' : 'border-l-slate-300'}`}>
                         <CardHeader>
-                            <CardTitle>Assinatura</CardTitle>
-                            <CardDescription>Status atual do seu plano.</CardDescription>
+                            <div className="flex items-center gap-2">
+                                <CardTitle>Assinatura e Plano</CardTitle>
+                                {subStatus === 'lifetime' && <Crown className="h-5 w-5 text-amber-500 fill-amber-500" />}
+                            </div>
+                            <CardDescription>Gerencie o status do seu acesso ao OficinaPRO.</CardDescription>
                         </CardHeader>
-                        <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
-                            <div>
-                                <p className="font-medium text-slate-900 uppercase">{subStatus}</p>
-                                {trialEnd && subStatus === 'trialing' && (
-                                    <p className="text-xs text-amber-600">Em período de teste</p>
+                        <CardContent className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <h3 className="text-lg font-semibold text-slate-900">
+                                        {subStatus === 'lifetime' ? 'Membro Vitalício' :
+                                            subStatus === 'active' ? 'Plano Pro' :
+                                                subStatus === 'trialing' ? 'Período de Teste' : 'Plano Gratuito'}
+                                    </h3>
+                                    <Badge variant={subStatus === 'lifetime' ? 'default' : subStatus === 'active' ? 'outline' : 'secondary'}
+                                        className={
+                                            subStatus === 'lifetime' ? 'bg-amber-100 text-amber-700 hover:bg-amber-100 border-amber-200' :
+                                                subStatus === 'active' ? 'text-green-700 border-green-200 bg-green-50' :
+                                                    subStatus === 'trialing' ? 'bg-amber-100 text-amber-700' : ''
+                                        }
+                                    >
+                                        {subStatus === 'lifetime' ? 'Permanente' :
+                                            subStatus === 'active' ? 'Ativo' :
+                                                subStatus === 'trialing' ? 'Trial' : 'Inativo'}
+                                    </Badge>
+                                </div>
+
+                                {subStatus === 'active' && (
+                                    <p className="text-sm text-slate-500">Sua assinatura está ativa e com renovação automática.</p>
+                                )}
+                                {subStatus === 'lifetime' && (
+                                    <p className="text-sm text-amber-600/80">Você possui acesso ilimitado a todos os recursos.</p>
+                                )}
+                                {subStatus === 'trialing' && trialEnd && (
+                                    <p className="text-sm text-amber-600">Seu teste termina em {new Date(trialEnd).toLocaleDateString()}.</p>
                                 )}
                             </div>
-                            <Link href="/subscription">
-                                <Button variant="outline">Gerenciar Assinatura</Button>
-                            </Link>
+
+                            {subStatus !== 'lifetime' && (
+                                <Link href="/subscription">
+                                    <Button variant={subStatus === 'active' ? 'outline' : 'default'}>
+                                        {subStatus === 'active' ? 'Gerenciar Assinatura' : 'Fazer Upgrade'}
+                                    </Button>
+                                </Link>
+                            )}
                         </CardContent>
                     </Card>
 

@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
         const { data: profile } = await supabase
             .from('profiles')
-            .select('organizations(stripe_customer_id)')
+            .select('organization_id, organizations(stripe_customer_id, name, document)')
             .eq('id', user.id)
             .single()
 
@@ -22,12 +22,32 @@ export async function POST(req: Request) {
             ? profile?.organizations[0]
             : profile?.organizations
 
-        if (!org?.stripe_customer_id) {
-            return new NextResponse('No Stripe Customer found', { status: 404 })
+        if (!profile || !org) {
+            return new NextResponse('Organization not found', { status: 404 })
+        }
+
+        let customerId = org.stripe_customer_id
+
+        if (!customerId) {
+            const customer = await stripe.customers.create({
+                email: user.email,
+                name: org.name,
+                metadata: {
+                    organization_id: profile.organization_id,
+                    cnpj: org.document
+                }
+            })
+            customerId = customer.id
+
+            // Save customer ID to DB
+            await supabase
+                .from('organizations')
+                .update({ stripe_customer_id: customerId })
+                .eq('id', profile.organization_id)
         }
 
         const session = await stripe.billingPortal.sessions.create({
-            customer: org.stripe_customer_id,
+            customer: customerId,
             return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/settings`,
         })
 

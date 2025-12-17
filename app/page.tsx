@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { CheckCircle2, MessageCircle, TrendingUp, ShieldCheck, ArrowRight, LayoutDashboard, DollarSign, Wrench, ChevronDown } from 'lucide-react'
+import { CheckCircle2, MessageCircle, TrendingUp, ShieldCheck, ArrowRight, LayoutDashboard, DollarSign, Wrench, ChevronDown, Camera } from 'lucide-react'
 import { useState } from 'react'
 import { LandingFooter } from '@/components/layout/LandingFooter'
 
@@ -126,9 +126,9 @@ export default function Home() {
                 description="Envie orçamentos profissionais em PDF ou texto direto no WhatsApp do cliente com um clique."
               />
               <FeatureCard
-                icon={<ShieldCheck className="w-10 h-10 text-blue-600" />}
-                title="Checklist Digital"
-                description="Faça vistorias completas no celular, registre avarias e evite prejuízos. Profissionalismo na entrada do veículo."
+                icon={<Camera className="w-10 h-10 text-blue-600" />}
+                title="Checklist com Fotos"
+                description="Faça vistorias completas usando a câmera do celular. Registre avarias com fotos e evite prejuízos nas vistorias."
               />
               <FeatureCard
                 icon={<TrendingUp className="w-10 h-10 text-purple-600" />}

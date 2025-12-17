@@ -11,9 +11,10 @@ interface WhatsAppButtonProps {
     osId: string
     totalAmount: number
     status: string
+    senderName?: string
 }
 
-export function WhatsAppButton({ phone, customerName, vehicleModel, plate, osId, totalAmount, status }: WhatsAppButtonProps) {
+export function WhatsAppButton({ phone, customerName, vehicleModel, plate, osId, totalAmount, status, senderName }: WhatsAppButtonProps) {
     if (!phone) return null
 
     const handleSend = () => {
@@ -24,7 +25,9 @@ export function WhatsAppButton({ phone, customerName, vehicleModel, plate, osId,
 
         const formattedTotal = (totalAmount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
-        let message = `Olá ${customerName}, aqui é da OficinaPro.\n`
+        const finalSender = senderName || 'OficinaPro'
+
+        let message = `Olá ${customerName}, aqui é da *${finalSender}*.\n`
         message += `Referente ao serviço no *${vehicleModel} (${plate})*.\n`
 
         if (status === 'draft' || status === 'pending_approval') {
