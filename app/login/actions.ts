@@ -75,3 +75,35 @@ export async function logout() {
     revalidatePath('/', 'layout')
     redirect('/login')
 }
+
+export async function forgotPassword(formData: FormData) {
+    const supabase = await createClient()
+    const origin = (await headers()).get('origin')
+    const email = formData.get('email') as string
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${origin}/auth/callback?next=/login/update-password`,
+    })
+
+    if (error) {
+        return { error: 'Não foi possível enviar o email de recuperação. Verifique o email informado.' }
+    }
+
+    return { message: 'Link de recuperação enviado! Verifique seu email.' }
+}
+
+export async function updatePassword(formData: FormData) {
+    const supabase = await createClient()
+    const password = formData.get('password') as string
+
+    const { error } = await supabase.auth.updateUser({
+        password: password,
+    })
+
+    if (error) {
+        return { error: 'Erro ao atualizar a senha. Tente novamente.' }
+    }
+
+    revalidatePath('/', 'layout')
+    redirect('/dashboard')
+}

@@ -188,7 +188,7 @@ function LoginForm() {
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="password">Senha</Label>
                                 {isLogin && (
-                                    <Link href="#" className="ml-auto inline-block text-sm underline text-muted-foreground hover:text-blue-600">
+                                    <Link href="/login/forgot-password" className="ml-auto inline-block text-sm underline text-muted-foreground hover:text-blue-600">
                                         Esqueceu?
                                     </Link>
                                 )}
