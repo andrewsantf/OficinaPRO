@@ -19,11 +19,8 @@ export const metadata: Metadata = {
   title: "OficinaPro - Gestão Inteligente para Oficinas",
   description: "Sistema de gestão para oficinas mecânicas: Orçamentos, Ordens de Serviço e Controle Financeiro.",
   manifest: '/manifest.json',
-  icons: {
-    icon: '/icon.png',
-    shortcut: '/icon.png',
-    apple: '/icon.png',
-  },
+
+  // icons handled automatically by app/icon.tsx
 };
 
 export const viewport: Viewport = {

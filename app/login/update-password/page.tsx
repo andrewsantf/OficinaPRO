@@ -30,10 +30,6 @@ export default function UpdatePasswordPage() {
                 toast.error("Erro", {
                     description: result.error
                 })
-            } else if (result && 'message' in result && result.message) {
-                toast.success("Sucesso", {
-                    description: result.message
-                })
             }
         })
     }
