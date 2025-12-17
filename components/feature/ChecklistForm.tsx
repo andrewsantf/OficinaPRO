@@ -9,27 +9,86 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { saveChecklist } from '@/app/service-orders/checklist-actions'
 import { toast } from 'sonner'
-import { ChevronDown, ChevronUp, ClipboardCheck, Fuel } from 'lucide-react'
+import { ChevronDown, ChevronUp, ClipboardCheck, Fuel, Camera, X, Loader2 } from 'lucide-react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import imageCompression from 'browser-image-compression'
+import { createClient } from '@/lib/supabase/client'
 
 interface ChecklistData {
     id: string
     fuel_level: string | null
     items: Record<string, boolean>
     notes: string | null
+    photos_url?: string[] | null
 }
 
 export function ChecklistForm({ serviceOrderId, initialData }: { serviceOrderId: string, initialData?: ChecklistData | null }) {
     const [isOpen, setIsOpen] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [uploading, setUploading] = useState(false)
+    const [photos, setPhotos] = useState<string[]>(initialData?.photos_url || [])
 
     // Helper to check if item is checked safely
     const isChecked = (key: string) => {
         return initialData?.items?.[key] === true
     }
 
+    async function handlePhotoUpload(event: React.ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0]
+        if (!file) return
+
+        try {
+            setUploading(true)
+
+            // 1. Compression
+            const options = {
+                maxSizeMB: 0.3, // 300KB
+                maxWidthOrHeight: 1280,
+                useWebWorker: true
+            }
+
+            const compressedFile = await imageCompression(file, options)
+
+            // 2. Upload to Supabase
+            const supabase = createClient()
+            const filename = `${serviceOrderId}-${Date.now()}.jpg`
+
+            const { data, error } = await supabase.storage
+                .from('checklist-photos')
+                .upload(filename, compressedFile)
+
+            if (error) {
+                console.error("Erro upload:", error)
+                throw error
+            }
+
+            // 3. Get Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('checklist-photos')
+                .getPublicUrl(filename)
+
+            setPhotos(prev => [...prev, publicUrl])
+            toast.success("Foto adicionada!")
+
+        } catch (error) {
+            console.error(error)
+            toast.error("Erro ao enviar foto. Tente novamente.")
+        } finally {
+            setUploading(false)
+        }
+    }
+
+    function removePhoto(indexToRemove: number) {
+        setPhotos(prev => prev.filter((_, index) => index !== indexToRemove))
+    }
+
     async function handleSubmit(formData: FormData) {
         setLoading(true)
+
+        // Append all photo URLs to formData
+        // We will need to handle this in the server action
+        photos.forEach(url => formData.append('photos_url', url))
+
         const result = await saveChecklist(serviceOrderId, formData)
         setLoading(false)
 
@@ -104,6 +163,48 @@ export function ChecklistForm({ serviceOrderId, initialData }: { serviceOrderId:
                                         </div>
                                     ))}
                                 </div>
+                            </div>
+
+                            <hr />
+
+                            {/* Fotos */}
+                            <div className="space-y-3">
+                                <Label className="flex items-center gap-2"><Camera className="h-4 w-4" /> Fotos da Vistoria</Label>
+
+                                <div className="grid grid-cols-3 gap-4 mb-4">
+                                    {photos.map((url, index) => (
+                                        <div key={index} className="relative aspect-square rounded-lg overflow-hidden border bg-slate-100">
+                                            <img src={url} alt={`Foto ${index + 1}`} className="w-full h-full object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => removePhoto(index)}
+                                                className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    ))}
+
+                                    <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-lg aspect-square cursor-pointer hover:bg-slate-50 transition-colors relative">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            capture="environment"
+                                            className="hidden"
+                                            onChange={handlePhotoUpload}
+                                            disabled={uploading}
+                                        />
+                                        {uploading ? (
+                                            <Loader2 className="h-6 w-6 text-blue-500 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Camera className="h-6 w-6 text-slate-400 mb-2" />
+                                                <span className="text-xs text-slate-500 font-medium">Adicionar</span>
+                                            </>
+                                        )}
+                                    </label>
+                                </div>
+                                <p className="text-xs text-slate-400">Clique para abrir a câmera. As fotos são comprimidas automaticamente.</p>
                             </div>
 
                             <hr />

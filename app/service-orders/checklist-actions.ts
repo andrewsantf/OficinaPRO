@@ -8,6 +8,7 @@ export async function saveChecklist(serviceOrderId: string, formData: FormData) 
 
     const fuelLevel = formData.get('fuel_level') as string
     const notes = formData.get('notes') as string
+    const photosUrl = formData.getAll('photos_url') as string[] // Get all photo URLs
 
     // Collect all checked items
     // We assume items are sent as "item_name": "on"
@@ -28,7 +29,8 @@ export async function saveChecklist(serviceOrderId: string, formData: FormData) 
             service_order_id: serviceOrderId,
             fuel_level: fuelLevel,
             notes: notes,
-            items: items
+            items: items,
+            photos_url: photosUrl
         }, { onConflict: 'service_order_id' })
 
     if (error) {
