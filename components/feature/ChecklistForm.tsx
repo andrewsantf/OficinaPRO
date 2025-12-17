@@ -119,20 +119,20 @@ export function ChecklistForm({ serviceOrderId, initialData }: { serviceOrderId:
                             {/* Nível de Combustível */}
                             <div className="space-y-3">
                                 <Label className="flex items-center gap-2"><Fuel className="h-4 w-4" /> Nível de Combustível</Label>
-                                <div className="grid grid-cols-4 gap-2">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                     {['empty', 'low', 'half', 'full'].map((level) => {
                                         const labels: Record<string, string> = { empty: 'Reserva', low: '1/4', half: '1/2', full: 'Cheio' }
                                         return (
-                                            <div key={level} className="flex items-center space-x-2 border rounded p-2 hover:bg-slate-50">
+                                            <div key={level} className="flex items-center space-x-2 border rounded p-2 hover:bg-slate-50 cursor-pointer">
                                                 <input
                                                     type="radio"
                                                     name="fuel_level"
                                                     value={level}
                                                     id={`fuel-${level}`}
                                                     defaultChecked={initialData?.fuel_level === level}
-                                                    className="accent-blue-600"
+                                                    className="accent-blue-600 h-4 w-4"
                                                 />
-                                                <Label htmlFor={`fuel-${level}`} className="cnt-0 cursor-pointer">{labels[level]}</Label>
+                                                <Label htmlFor={`fuel-${level}`} className="cursor-pointer text-sm font-medium flex-1">{labels[level]}</Label>
                                             </div>
                                         )
                                     })}
@@ -144,7 +144,7 @@ export function ChecklistForm({ serviceOrderId, initialData }: { serviceOrderId:
                             {/* Itens Obrigatórios */}
                             <div className="space-y-3">
                                 <Label>Itens Obrigatórios</Label>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                     {[
                                         { id: 'step_tire', label: 'Estepe' },
                                         { id: 'jack', label: 'Macaco' },
